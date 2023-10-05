@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <title>Send Form Alpine + php</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"
+  >
+</head>
+<body>
+
+<div class="container">
+  <h2 class="mt-4">Форма отправки</h2>
+  <!-- Example Code -->
+  <form @submit.prevent="sendForm" class="col-4 mt-5" x-data="form">
+    <div x-show="showForm">
+      <div class="mb-3">
+        <label class="form-label">Имя</label>
+        <input x-model="username" type="text" class="form-control" placeholder="name">
+        <span x-show="!username" class="text-danger">Поле name не заполнено</span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input x-model="email" type="email" class="form-control" placeholder="name@example.com">
+        <span x-show="!email" class="text-danger">Поле email не заполнено</span>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Отзыв</label>
+        <textarea x-model="text" class="form-control" rows="5"></textarea>
+        <span x-show="!text" class="text-danger">Поле отзыв не заполнено</span>
+      </div>
+      <button :class="{ disabled: !username || !email || !text }" class="btn btn-outline-primary" type="submit">Отправить</button>
+    </div>
+    <div x-show="!showForm">
+      <h5 class="text-success-emphasis">Форма отправлена !</h5>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('form', () => ({
+    username: '',
+    email: '',
+    text: '',
+    showForm: true,
+
+    async sendForm () {
+      await fetch('/sender.php', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: this.username,
+          email: this.email,
+          text: this.text,
+        })
+      })
+      this.showForm = false
+    }
+  }))
+})
+</script>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"
+></script>
+</body>
+</html>
